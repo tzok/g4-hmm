@@ -5,7 +5,7 @@ import numpy as np
 from hmmlearn import hmm
 
 
-def load_loop_data():
+def load_loop_data(unimolecular_only=False):
     observations = []
     states = []
 
@@ -27,6 +27,9 @@ def load_loop_data():
             elif c == "T" or c == "U":
                 observation.append(3)
             elif c == "-":
+                if unimolecular_only:
+                    flag = True
+                    break
                 continue
             elif c == "N":
                 flag = True
@@ -55,7 +58,7 @@ def load_loop_data():
     return zip(observations, states)
 
 
-def load_tract_data():
+def load_tract_data(unimolecular_only=False):
     observations = []
     states = []
 
@@ -78,6 +81,9 @@ def load_tract_data():
             elif s == "T" or s == "U":
                 observation.append(3)
             elif s == "-":
+                if unimolecular_only:
+                    flag = True
+                    break
                 continue
             elif s == "N":
                 flag = True
@@ -169,11 +175,11 @@ def refine_hmm(model, paired_seqs):
     model.fit(concatenated_obs, lengths)
 
 
-def train_hmm_for_dataset(data):
+def train_hmm_for_dataset(data, unimolecular_only=False):
     if data == "loop":
-        paired_seqs = list(load_loop_data())
+        paired_seqs = list(load_loop_data(unimolecular_only))
     elif data == "tract":
-        paired_seqs = list(load_tract_data())
+        paired_seqs = list(load_tract_data(unimolecular_only))
     else:
         raise ValueError(f"Invalid data type {data}")
 
@@ -202,8 +208,8 @@ def train_hmm_for_dataset(data):
 
 
 def main():
-    train_hmm_for_dataset("loop")
-    train_hmm_for_dataset("tract")
+    train_hmm_for_dataset("loop", True)
+    train_hmm_for_dataset("tract", True)
 
 
 if __name__ == "__main__":

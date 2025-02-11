@@ -46,8 +46,8 @@ def process_text(input_text, tract_model, loop_model):
 
 
 def main():
-    tract_model = train_hmm_for_dataset("tract")
-    loop_model = train_hmm_for_dataset("loop")
+    tract_model = train_hmm_for_dataset("tract", True)
+    loop_model = train_hmm_for_dataset("loop", True)
 
     st.title("HMM for G4 tract & loop location prediction")
 
