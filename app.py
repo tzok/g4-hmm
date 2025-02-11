@@ -8,17 +8,18 @@ def process_text(input_text):
 
 
 def main():
-    st.title("Text Processor")
+    st.title("G4 loop location prediction")
 
     # Create text input
-    user_input = st.text_input("Enter your text:")
+    user_input = st.text_input("Enter your G4 sequence:")
 
     # Create button
     if st.button("Process"):
         if user_input:
             # Process the input and display result
             result = process_text(user_input)
-            st.write("Result:", result)
+            st.write("Result:")
+            st.code(result, language=None)
         else:
             st.warning("Please enter some text")
 
