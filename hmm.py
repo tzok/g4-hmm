@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 import glob
-import pickle
 
 import numpy as np
 from hmmlearn import hmm
@@ -170,7 +169,7 @@ def refine_hmm(model, paired_seqs):
     model.fit(concatenated_obs, lengths)
 
 
-def train_and_refine_hmm(data):
+def train_hmm_for_dataset(data):
     if data == "loop":
         paired_seqs = list(load_loop_data())
     elif data == "tract":
@@ -181,30 +180,30 @@ def train_and_refine_hmm(data):
     model = train_hmm(paired_seqs)
 
     # Print the parameters before unsupervised refinement.
-    print("Parameters BEFORE unsupervised training:")
     print("Start probabilities:\n", model.startprob_)
     print("Transition matrix:\n", model.transmat_)
     print("Emission probability matrix:\n", model.emissionprob_)
+    return model
 
-    with open(f"{data}_model.pkl", "wb") as f:
-        pickle.dump(model, f)
+    # with open(f"{data}_model.pkl", "wb") as f:
+    #     pickle.dump(model, f)
 
-    # Refine the model using unsupervised training.
-    refine_hmm(model, paired_seqs)
+    # # Refine the model using unsupervised training.
+    # refine_hmm(model, paired_seqs)
 
-    with open(f"{data}_model_refined.pkl", "wb") as f:
-        pickle.dump(model, f)
+    # with open(f"{data}_model_refined.pkl", "wb") as f:
+    #     pickle.dump(model, f)
 
-    # Print the parameters after unsupervised refinement.
-    print("\nParameters AFTER unsupervised training (fit):")
-    print("Start probabilities:\n", model.startprob_)
-    print("Transition matrix:\n", model.transmat_)
-    print("Emission probability matrix:\n", model.emissionprob_)
+    # # Print the parameters after unsupervised refinement.
+    # print("\nParameters AFTER unsupervised training (fit):")
+    # print("Start probabilities:\n", model.startprob_)
+    # print("Transition matrix:\n", model.transmat_)
+    # print("Emission probability matrix:\n", model.emissionprob_)
 
 
 def main():
-    train_and_refine_hmm("loop")
-    train_and_refine_hmm("tract")
+    train_hmm_for_dataset("loop")
+    train_hmm_for_dataset("tract")
 
 
 if __name__ == "__main__":

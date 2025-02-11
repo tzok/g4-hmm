@@ -1,6 +1,6 @@
-import pickle
-
 import streamlit as st
+
+from hmm import train_hmm_for_dataset
 
 
 def validate_sequence(sequence):
@@ -10,9 +10,7 @@ def validate_sequence(sequence):
     return all(char in valid_chars for char in sequence)
 
 
-def process_text(
-    input_text, tract_model, tract_model_refined, loop_model, loop_model_refined
-):
+def process_text(input_text, tract_model, loop_model):
     input_text = input_text.upper()
     if not validate_sequence(input_text):
         raise ValueError("Sequence must contain only A, C, G, U, or T nucleotides")
@@ -48,14 +46,8 @@ def process_text(
 
 
 def main():
-    with open("tract_model.pkl", "rb") as f:
-        tract_model = pickle.load(f)
-    with open("tract_model_refined.pkl", "rb") as f:
-        tract_model_refined = pickle.load(f)
-    with open("loop_model.pkl", "rb") as f:
-        loop_model = pickle.load(f)
-    with open("loop_model_refined.pkl", "rb") as f:
-        loop_model_refined = pickle.load(f)
+    tract_model = train_hmm_for_dataset("tract")
+    loop_model = train_hmm_for_dataset("loop")
 
     st.title("HMM for G4 tract & loop location prediction")
 
@@ -70,9 +62,7 @@ def main():
                 results = process_text(
                     user_input,
                     tract_model,
-                    tract_model_refined,
                     loop_model,
-                    loop_model_refined,
                 )
                 for title, result in zip(
                     [
