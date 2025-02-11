@@ -32,7 +32,9 @@ def process_text(
             raise ValueError(f"Invalid character {c}")
 
     tract_states, tract_scores = tract_model.decode([observation])
-    tract_refined_states, tract_refined_scores = tract_model_refined.decode([observation])
+    tract_refined_states, tract_refined_scores = tract_model_refined.decode(
+        [observation]
+    )
     loop_states, loop_scores = loop_model.decode([observation])
     loop_refined_states, loop_refined_scores = loop_model_refined.decode([observation])
 
