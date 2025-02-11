@@ -31,23 +31,20 @@ def process_text(
         else:
             raise ValueError(f"Invalid character {c}")
 
-    tract_states, tract_scores = tract_model.decode([observation])
-    tract_refined_states, tract_refined_scores = tract_model_refined.decode(
-        [observation]
-    )
-    loop_states, loop_scores = loop_model.decode([observation])
-    loop_refined_states, loop_refined_scores = loop_model_refined.decode([observation])
+    result = []
 
-    return (
-        "Tract Model States: " + str(tract_states),
-        "Tract Model Scores: " + str(tract_scores),
-        "Refined Tract Model States: " + str(tract_refined_states),
-        "Refined Tract Model Scores: " + str(tract_refined_scores),
-        "Loop Model States: " + str(loop_states),
-        "Loop Model Scores: " + str(loop_scores),
-        "Refined Loop Model States: " + str(loop_refined_states),
-        "Refined Loop Model Scores: " + str(loop_refined_scores),
-    )
+    for algorithm in ("viterbi", "map"):
+        _, tract_states = tract_model.decode([observation], algorithm=algorithm)
+        _, loop_states = loop_model.decode([observation], algorithm=algorithm)
+        result.append(
+            input_text
+            + "\n"
+            + "".join(["." if s == 0 else "T" for s in tract_states])
+            + "\n"
+            + "".join(["." if s == 0 else "L" for s in loop_states])
+        )
+
+    return result
 
 
 def main():
@@ -60,7 +57,7 @@ def main():
     with open("loop_model_refined.pkl", "rb") as f:
         loop_model_refined = pickle.load(f)
 
-    st.title("G4 loop location prediction")
+    st.title("HMM for G4 tract & loop location prediction")
 
     # Create text input
     user_input = st.text_input("Enter your G4 sequence:")
@@ -79,14 +76,8 @@ def main():
                 )
                 for title, result in zip(
                     [
-                        "Tract Model States",
-                        "Tract Model Scores",
-                        "Refined Tract Model States",
-                        "Refined Tract Model Scores",
-                        "Loop Model States",
-                        "Loop Model Scores",
-                        "Refined Loop Model States",
-                        "Refined Loop Model Scores",
+                        "Viterbi",
+                        "MAP",
                     ],
                     results,
                 ):
@@ -95,7 +86,7 @@ def main():
             except ValueError as e:
                 st.error(str(e))
         else:
-            st.warning("Please enter some text")
+            st.warning("Enter your G4 sequence")
 
 
 if __name__ == "__main__":
