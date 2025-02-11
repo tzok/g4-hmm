@@ -5,9 +5,10 @@ import streamlit as st
 
 def validate_sequence(sequence):
     """Validate if the sequence contains only ACGUT nucleotides."""
-    valid_chars = set('ACGUT')
+    valid_chars = set("ACGUT")
     sequence = sequence.upper()
     return all(char in valid_chars for char in sequence)
+
 
 def process_text(input_text):
     # This is a sample processing function
