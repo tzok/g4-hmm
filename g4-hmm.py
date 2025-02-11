@@ -63,42 +63,40 @@ def load_tract_data():
     for path in glob.iglob("qrs/*.dbn"):
         with open(path) as f:
             lines = f.readlines()
-            sequence, loops = lines[0].strip(), lines[1].strip()
+            sequence, tract = lines[0].strip(), lines[1].strip()
 
         observation = []
+        state = []
         flag = False
 
-        for c in sequence:
-            if c == "A":
+        for s, t in zip(sequence, tract):
+            if s == "A":
                 observation.append(0)
-            elif c == "C":
+            elif s == "C":
                 observation.append(1)
-            elif c == "G":
+            elif s == "G":
                 observation.append(2)
-            elif c == "T" or c == "U":
+            elif s == "T" or s == "U":
                 observation.append(3)
-            elif c == "-":
+            elif s == "-":
                 continue
-            elif c == "N":
+            elif s == "N":
                 flag = True
                 break
             else:
-                raise ValueError(f"Invalid character {c}")
+                raise ValueError(f"Invalid character {s}")
+
+            if t == "." or s != "G":
+                state.append(0)
+            elif t == "-":
+                continue
+            else:
+                state.append(1)
 
         if flag:
             continue
 
         observations.append(np.array(observation))
-        state = []
-
-        for c in loops:
-            if c == ".":
-                state.append(0)
-            elif c == "-":
-                continue
-            else:
-                state.append(1)
-
         states.append(np.array(state))
 
     return zip(observations, states)
